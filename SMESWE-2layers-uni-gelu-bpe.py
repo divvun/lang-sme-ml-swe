@@ -1,8 +1,5 @@
 # [0] START
 
-import glob
-for filename in glob.iglob('/opt/ml/**/*', recursive=True):
-    print(filename)
 # !pip install nltk
 # !pip install sacrebleu
 import nltk
