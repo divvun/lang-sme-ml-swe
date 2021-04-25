@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from queue import Queue
 import sacrebleu
 import xml.etree.ElementTree as ET
+import gzip
+import io
 
 import sentencepiece as spm
 
@@ -254,7 +256,8 @@ def save_checkpoint(state, filename):
 def read_data(xml_file):
     swedish_sent = []
     sami_sent = []
-    tree = ET.parse(xml_file)
+    data = io.StringIO(gzip.open(xml_file, 'rt').read())
+    tree = ET.parse(data)
     root = tree.getroot()
     for i, child in enumerate(root):
         if i == 1:

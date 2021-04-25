@@ -44,7 +44,7 @@ max_len = 150
 # [4] END
 
 # [5] START
-sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx')
+sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx.gz')
 # [5] END
 
 # [6] START

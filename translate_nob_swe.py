@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 from google.cloud import translate_v2 as translate
 
 #load  North Sámi - Norwegian Corpus
-tree = ET.parse('corpora/nobsme.tmx')
+tree = ET.parse('corpora/nobsme.tmx.gz')
 root = tree.getroot()
 translate_client = translate.Client()
 

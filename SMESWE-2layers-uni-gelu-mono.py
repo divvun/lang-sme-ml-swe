@@ -17,6 +17,7 @@ from torch.utils.data import DataLoader, Dataset, TensorDataset
 # from tqdm import tqdm
 import json
 import numpy as np
+import gzip
 
 from .transformer_model import Transformer as Trans_model
 from .utils import *
@@ -31,10 +32,10 @@ device = torch.device("cuda:0")
 
 # [2] START
 add_swe = []
-with open('corpora/fof_sents.txt') as fp:
+with gzip.open('corpora/fof_sents.txt', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
-with open('corpora/add_swed_sents.txt') as fp:
+with gzip.open('corpora/add_swed_sents.txt', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
 # [2] END
@@ -58,7 +59,7 @@ max_len = 150
 # [6] END
 
 # [7] START
-sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx')
+sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx.gz')
 # [7] END
 
 # [8] START
