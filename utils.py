@@ -212,42 +212,49 @@ def translate_sentence(model, sentence, device, tokenizer_src, tokenizer_trg, ma
 
 
 def translate_enc_sentences(model, sentences, device, tokenizertrg, max_length=150):
-    final_sents = {}
+    """
+    takes a list of encoded sentences and returns decoded translations
+    """
+    final_sents = {} #initialize translation dict
+    
      # Convert to Tensor
     sentence_tensor = sentences
     sentence_tensor = sentence_tensor.transpose(0,1)
     # Insert <SOS> token
     sp.Load(tokenizertrg)
     outputs = [[sp.bos_id()] for i in range(sentence_tensor.shape[1])]
-    for i in range(max_length):
+    
+    for i in range(max_length): # loop through positions in trg sequence
         trg_tensor = [torch.LongTensor(outputs[i]) for i in range(len(outputs))]
-        trg_tensor = torch.stack(trg_tensor)
+        trg_tensor = torch.stack(trg_tensor) #stack input sequences to tensor
         trg_tensor = trg_tensor.transpose(0, 1)
         with torch.no_grad():
             output = model(sentence_tensor, trg_tensor)
         output.transpose(1,2)
-        for e in range(len(outputs)):
-            outpute = F.log_softmax(output[:, e])
+        for e in range(len(outputs)): # loop through predictions
+            outpute = F.log_softmax(output[:, e]) # get predicted token
             topv, topi = outpute[-1, :].data.topk(1)
             best_guess = topi.tolist()[0]
-            outputs[e].append(best_guess)
-            if best_guess == sp.eos_id():
-                final_sents[e] = outputs[e]
-            elif len(outputs[e]) == max_length:
-                if e not in final_sents.keys():
-                    final_sents[e] = outputs[e]
-        if len(final_sents.keys()) == len(sentences):
+            outputs[e].append(best_guess) # append predicted token to sequence
+            if best_guess == sp.eos_id(): # if end of sequence is reached
+                final_sents[e] = outputs[e] # append sequence to translation dict
+            elif len(outputs[e]) == max_length: # if max len of trg is reached 
+                if e not in final_sents.keys(): # and if translation of sentence e is not yet found
+                    final_sents[e] = outputs[e] # append sequence to translation dict
+                    
+        if len(final_sents.keys()) == len(sentences): #make sure every sentence has a translation
             final_list = []
             for i in range(len(final_sents.keys())):
                 if sp.eos_id() in final_sents[i]:
-                    sent = final_sents[i][:(final_sents[i].index(sp.eos_id())+1)]
+                    sent = final_sents[i][:(final_sents[i].index(sp.eos_id())+1)] # cut sentence to first predicted eos token (unnecessary if prediction stops here)
                     final_list.append(sent)
                 else:
                     final_list.append(final_sents[i])
-            decoded = [sp.DecodeIds(sent) for sent in final_list]
+            decoded = [sp.DecodeIds(sent) for sent in final_list] #decide sequences
             
             return  decoded
 
+        
 def save_checkpoint(state, filename):
     print("=> Saving checkpoint")
     torch.save(state, filename)
