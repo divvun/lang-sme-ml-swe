@@ -19,8 +19,8 @@ import json
 import numpy as np
 import gzip
 
-from .transformer_model import Transformer as Trans_model
-from .utils import *
+from transformer_model import Transformer as Trans_model
+from utils import *
 # [0] END
 
 import os
@@ -32,10 +32,10 @@ device = torch.device("cuda:0")
 
 # [2] START
 add_swe = []
-with gzip.open('corpora/fof_sents.txt', 'rt', encoding="utf-8") as fp:
+with gzip.open('corpora/fof_sents.txt.gz', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
-with gzip.open('corpora/add_swed_sents.txt', 'rt', encoding="utf-8") as fp:
+with gzip.open('corpora/add_swed_sents.txt.gz', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
 # [2] END
