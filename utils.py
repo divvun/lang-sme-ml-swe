@@ -5,8 +5,6 @@ import torch.nn.functional as F
 from queue import Queue
 import sacrebleu
 import xml.etree.ElementTree as ET
-import gzip
-import io
 
 import sentencepiece as spm
 
@@ -67,7 +65,7 @@ def get_scores(enc_sources, enc_target_sents, model, device, tokenizersrc, token
     target_str = [sp.DecodeIds(sent.tolist()) for sent in enc_target_sents]
     output_str = []
     if search == "greedy":
-        x = divide_chunks(enc_sources, 1000)
+        x = divide_chunks(enc_sources, 100)
         output_str = []
         for sents in x:
             y = translate_enc_sentences(model, sents, device, tokenizertrg, max_length=150)
@@ -243,7 +241,9 @@ def translate_enc_sentences(model, sentences, device, tokenizertrg, max_length=1
             for i in range(len(final_sents.keys())):
                 if sp.eos_id() in final_sents[i]:
                     sent = final_sents[i][:(final_sents[i].index(sp.eos_id())+1)]
-                final_list.append(sent)
+                    final_list.append(sent)
+                else:
+                    final_list.append(final_sents[i])
             decoded = [sp.DecodeIds(sent) for sent in final_list]
             
             return  decoded
@@ -256,8 +256,7 @@ def save_checkpoint(state, filename):
 def read_data(xml_file):
     swedish_sent = []
     sami_sent = []
-    data = io.StringIO(gzip.open(xml_file, 'rt').read())
-    tree = ET.parse(data)
+    tree = ET.parse(xml_file)
     root = tree.getroot()
     for i, child in enumerate(root):
         if i == 1:
