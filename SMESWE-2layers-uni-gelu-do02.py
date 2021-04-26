@@ -14,7 +14,7 @@ import sentencepiece as spm
 from collections import Counter
 import random
 from torch.utils.data import DataLoader, Dataset, TensorDataset
-# from tqdm import tqdm
+from tqdm import tqdm
 import json
 import numpy as np
 
@@ -192,7 +192,7 @@ for epoch in range(num_epochs):
     val_ppl = []
 
 
-    for input_batch, target_batch in train_loader:
+    for input_batch, target_batch in tqdm(train_loader):
         model.train()
         input_batch = input_batch.transpose(0, 1)
         target_batch = target_batch.transpose(0, 1)
@@ -230,7 +230,7 @@ for epoch in range(num_epochs):
     mean_perplex = sum(ppl) / len(ppl)
     e_ppl.append(mean_perplex) #keep track of training perplexity for plotting
     
-    for input_batch, target_batch in val_loader:
+    for input_batch, target_batch in tqdm(val_loader):
         input_batch = input_batch.transpose(0, 1)
         target_batch = target_batch.transpose(0, 1)
         # Get input and targets and get to cuda
