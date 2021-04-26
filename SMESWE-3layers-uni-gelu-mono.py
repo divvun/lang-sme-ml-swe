@@ -14,7 +14,7 @@ import sentencepiece as spm
 from collections import Counter
 import random
 from torch.utils.data import DataLoader, Dataset, TensorDataset
-# from tqdm import tqdm
+from tqdm import tqdm
 import json
 import numpy as np
 import gzip
@@ -32,10 +32,10 @@ device = torch.device("cuda:0")
 
 # [2] START
 add_swe = []
-with gzip.open('corpora/fof_sents.txt', 'rt', encoding="utf-8") as fp:
+with gzip.open('corpora/fof_sents.txt.gz', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
-with gzip.open('corpora/add_swed_sents.txt', 'rt', encoding="utf-8") as fp:
+with gzip.open('corpora/add_swed_sents.txt.gz', 'rt', encoding="utf-8") as fp:
     for line in fp:
         add_swe.append(line)
 # [2] END
@@ -113,7 +113,7 @@ test_dataset = TensorDataset(test_src, test_tgts)
 
 # [15] START
 # Training hyperparameters
-num_epochs = 500
+num_epochs = 200
 learning_rate = 3e-4
 batch_size = 64
 # [15] END
@@ -214,7 +214,7 @@ for epoch in range(num_epochs):
     val_ppl = []
 
 
-    for input_batch, target_batch in train_loader:
+    for input_batch, target_batch in tqdm(train_loader):
         model.train()
         input_batch = input_batch.transpose(0, 1)
         target_batch = target_batch.transpose(0, 1)
@@ -252,7 +252,7 @@ for epoch in range(num_epochs):
     mean_perplex = sum(ppl) / len(ppl)
     e_ppl.append(mean_perplex) #keep track of training perplexity for plotting
     
-    for input_batch, target_batch in val_loader:
+    for input_batch, target_batch in tqdm(val_loader):
         input_batch = input_batch.transpose(0, 1)
         target_batch = target_batch.transpose(0, 1)
         # Get input and targets and get to cuda
