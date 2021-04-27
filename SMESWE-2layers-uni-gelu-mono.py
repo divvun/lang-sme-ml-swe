@@ -113,7 +113,7 @@ test_dataset = TensorDataset(test_src, test_tgts)
 
 # [15] START
 # Training hyperparameters
-num_epochs = 500
+num_epochs = 200
 learning_rate = 3e-4
 batch_size = 64
 # [15] END
