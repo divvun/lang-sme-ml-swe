@@ -19,8 +19,8 @@ import json
 import numpy as np
 import gzip
 
-from .transformer_model import Transformer as Trans_model
-from .utils import *
+from transformer_model import Transformer as Trans_model
+from utils import *
 # [0] END
 
 import os
