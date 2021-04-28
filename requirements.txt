@@ -1,0 +1,4 @@
+sentencepiece
+nltk
+tqdm
+sacrebleu
