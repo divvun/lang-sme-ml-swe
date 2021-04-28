@@ -18,8 +18,8 @@ from tqdm import tqdm
 import json
 import numpy as np
 
-from .transformer_model import Transformer as Trans_model
-from .utils import *
+from transformer_model import Transformer as Trans_model
+from utils import *
 # [0] END
 
 import os
@@ -92,7 +92,7 @@ test_dataset = TensorDataset(test_src, test_tgts)
 
 # [12] START
 # Training hyperparameters
-num_epochs = 500
+num_epochs = 200
 learning_rate = 3e-4
 batch_size = 64
 # [12] END

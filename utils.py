@@ -261,9 +261,12 @@ def save_checkpoint(state, filename):
     
 
 def read_data(xml_file):
+    import gzip
+    import io
     swedish_sent = []
     sami_sent = []
-    tree = ET.parse(xml_file)
+    data = gzip.open(xml_file, 'rt', encoding="utf-8").read()
+    tree = ET.parse(io.StringIO(data))
     root = tree.getroot()
     for i, child in enumerate(root):
         if i == 1:
