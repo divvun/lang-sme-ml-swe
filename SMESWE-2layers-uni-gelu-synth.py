@@ -23,6 +23,12 @@ import numpy as np
 
 # [1] START
 device = torch.device("cuda:0")
+
+
+import sys
+ 
+path = 'log_synth_swed.txt'
+sys.stdout = open(path, 'w')
 # [1] END
 
 # [2] START
