@@ -1,8 +1,8 @@
-import sys
-def eprint(*args, **kwargs):
-    print(*args, flush=True, file=sys.stderr, **kwargs)
+import logging
+logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s', level=logging.DEBUG)
 
-eprint("Beginning to import dependencies.")
+logging.info("Beginning to import dependencies.")
+
 
 import torch
 import torch.nn as nn
@@ -19,7 +19,7 @@ from tqdm import tqdm
 import json
 import numpy as np
 
-eprint("Imported all dependencies.")
+logging.info("Imported all dependencies.")
 
 device = torch.device("cuda:0")
 
@@ -31,12 +31,12 @@ model_path = "uni_joint_2layer_gelu_synth.pth.tar"
 
 max_len = 150
 
-eprint("Reading smeswebig.tmx.gz")
+logging.info("Reading smeswebig.tmx.gz")
 sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx.gz')
 
 len(sami_sent)
 
-eprint("Loading sentence files")
+logging.info("Loading sentence files")
 add_sme_sent = []
 with open("bound_sme_sent.txt") as f:
     for line in f:
@@ -62,7 +62,7 @@ len(add_swe_sent) == len(add_sme_sent)
 
 sp = spm.SentencePieceProcessor()
 
-eprint("Processing sentences")
+logging.info("Processing sentences")
 
 sami_sent.extend(add_sme_sent)
 
@@ -71,9 +71,9 @@ swedish_sent.extend(add_swe_sent)
 
 sami_tokenized, swedish_tokenized = tokenizer_sp(sami_model, sami_sent, swedish_model, swedish_sent)
 
-eprint("Loading indices")
+logging.info("Loading indices")
 with open("./indices.json", "r", encoding="utf-8") as f:
-  ind = json.load(f)
+    ind = json.load(f)
 train_indices = ind["train_indices"]
 val_indices = ind["val_indices"]
 test_indices = ind["test_indices"]
@@ -92,7 +92,7 @@ train_indices.extend([i for i in range(train_indices[-1]+1, len(sami_tokenized))
 # print(len(sami_tokenized))
 # print(train_indices[-1])
 
-eprint("Creating stacks and datasets")
+logging.info("Creating stacks and datasets")
 train_src = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
 train_tgts = torch.stack([torch.LongTensor(swedish_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
 val_src = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in val_indices if i in range(len(sami_tokenized))])
@@ -124,7 +124,7 @@ forward_expansion = 2048
 sp.Load(sami_model)
 src_pad_idx = sp.pad_id()
 
-eprint("Loading trans model")
+logging.info("Loading trans model")
 model = Trans_model(
     embedding_size,
     src_vocab_size,
@@ -168,7 +168,7 @@ e_val_ppl = []
 threshold = 5
 step = 5
 
-eprint("Beginning training")
+logging.info("Beginning training")
 
 
 for epoch in range(num_epochs):
@@ -182,7 +182,7 @@ for epoch in range(num_epochs):
         model, sentence2, device, sami_model, swedish_model
     )
 
-    eprint(f"Translated example sentences: \n {translated_sentence} \n {translated_sentence2}")
+    logging.info(f"Translated example sentences: \n {translated_sentence} \n {translated_sentence2}")
     losses = []
     val_losses = []
     ppl = []
@@ -258,9 +258,9 @@ for epoch in range(num_epochs):
      
     if (epoch+1) % step == 0: # evaluate after every step
         bleu_train, chrf_train, ter_train = get_scores(train_src[:200], train_tgts[:200], model, device, sami_model, swedish_model, "greedy")
-        eprint("Bleu score in train set in epoch", epoch + 1, ":", bleu_train, "chrf:", chrf_train, "ter:", ter_train)
+        logging.info("Bleu score in train set in epoch", epoch + 1, ":", bleu_train, "chrf:", chrf_train, "ter:", ter_train)
         bleu_val, chrf_val, ter_val = get_scores(val_src, val_tgts, model, device, sami_model, swedish_model, "greedy")
-        eprint("Bleu score in val set in epoch", epoch + 1, ":", bleu_val, "chrf:", chrf_val, "ter:", ter_val)
+        logging.info("Bleu score in val set in epoch", epoch + 1, ":", bleu_val, "chrf:", chrf_val, "ter:", ter_val)
         scores.append(bleu_val) #keep track of validation bleu scores
         if bleu_val.score >= best_score:
             # if current state is best performing save checkpoint
@@ -274,17 +274,17 @@ for epoch in range(num_epochs):
         else:
             scheduler.step() 
             e_since_impr += 1 # keep track of epochs*step without improvement
-            eprint("Epochs since improvement:", e_since_impr, "new learning rate:", scheduler.get_lr()[0])
+            logging.info("Epochs since improvement:", e_since_impr, "new learning rate:", scheduler.get_lr()[0])
             if e_since_impr >= threshold: # if no improvement for x epochs -> early stopping
-                eprint("Epochs since improvement:", e_since_impr, ". Early Stopping at epoch", epoch)
+                logging.info("Epochs since improvement:", e_since_impr, ". Early Stopping at epoch", epoch)
                 
     
     
-    eprint("Current best score:", best_score)
-    eprint("Loss in epoch", epoch + 1 , ":", mean_loss, ", perplexity", mean_perplex, "_____ Validation loss:", val_mean_loss, ", perplexity", val_mean_perplex)
+    logging.info("Current best score:", best_score)
+    logging.info("Loss in epoch", epoch + 1 , ":", mean_loss, ", perplexity", mean_perplex, "_____ Validation loss:", val_mean_loss, ", perplexity", val_mean_perplex)
 
-eprint("scores:", scores)
+logging.info("scores:", scores)
 
-eprint(get_scores(test_src, test_tgts, model, device, sami_model, swedish_model, "greedy"))
+logging.info(get_scores(test_src, test_tgts, model, device, sami_model, swedish_model, "greedy"))
 
 
