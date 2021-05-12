@@ -133,30 +133,6 @@ src_pad_idx = sp.pad_id()
 load_model = True
 # [20] END
 
-# [21] START
-sent1 = sami_sent[test_indices[4000]]
-trans1 = swedish_sent[test_indices[4000]]
-print(sent1, "\n", trans1)
-# [21] END
-
-# [22] START
-sent2 = sami_sent[test_indices[50]]
-trans2 = swedish_sent[test_indices[50]]
-print(sent2, "\n", trans2)
-# [22] END
-
-# [23] START
-sent3 = sami_sent[test_indices[1015]]
-trans3 = swedish_sent[test_indices[1015]]
-print(sent3, "\n", trans3)
-# [23] END
-
-# [24] START
-sent4 = sami_short[7]
-trans4 = swedish_short[7]
-print(sent4, "\n", trans4)
-# [24] END
-
 # [25] START
 # Synth SWE
 # [25] END
@@ -197,28 +173,12 @@ if load_model == True:
 model_synth_swe.to(device)
 # [29] END
 
-# [30] START
-translate_sentence(model_synth_swe, sent1, device, sami_model, swedish_model)
-# [30] END
-
-# [31] START
-translate_sentence(model_synth_swe, sent2, device, sami_model, swedish_model)
-# [31] END
-
-# [32] START
-translate_sentence(model_synth_swe, sent3, device, sami_model, swedish_model)
-# [32] END
-
-# [33] START
-translate_sentence(model_synth_swe, sent4, device, sami_model, swedish_model)
-# [33] END
-
 # [34] START
 print("all sentences:")
 # [34] END
 
 # [35] START
-get_scores(test_src, test_tgts, model_synth_swe, device, sami_model, swedish_model, "greedy")
+print(get_scores(test_src, test_tgts, model_synth_swe, device, sami_model, swedish_model, "greedy"))
 # [35] END
 
 # [36] START
@@ -226,7 +186,7 @@ print("short sentences:")
 # [36] END
 
 # [37] START
-get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy")
+print(get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy"))
 # [37] END
 
 # [38] START
@@ -273,24 +233,8 @@ if load_model == True:
 model_synth_sme.to(device)
 # [43] END
 
-# [44] START
-translate_sentence(model_synth_sme, sent1, device, sami_model, swedish_model)
-# [44] END
-
-# [45] START
-translate_sentence(model_synth_sme, sent2, device, sami_model, swedish_model)
-# [45] END
-
-# [46] START
-translate_sentence(model_synth_sme, sent3, device, sami_model, swedish_model)
-# [46] END
-
-# [47] START
-translate_sentence(model_synth_sme, sent4, device, sami_model, swedish_model)
-# [47] END
-
 # [48] START
-get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy")
+print(get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy"))
 # [48] END
 
 # [49] START
