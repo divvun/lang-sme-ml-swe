@@ -66,8 +66,8 @@ len(sami_tokenized)
 # [8] END
 
 # [9] START
-train_src = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
-train_tgts = torch.stack([torch.LongTensor(swedish_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
+test_src = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in test_indices if i in range(len(sami_tokenized))])
+test_tgts = torch.stack([torch.LongTensor(swedish_tokenized[i]) for i in test_indices if i in range(len(sami_tokenized))])
 # [9] END
 
 # [10] START
@@ -145,6 +145,34 @@ src_pad_idx = sp.pad_id()
 load_model = True
 # [23] END
 
+# [24] START
+sent1 = sami_sent[test_indices[4000]]
+trans1 = swedish_sent[test_indices[4000]]
+print(sent1, "\n", trans1)
+# [24] END
+
+# [25] START
+sent2 = sami_sent[test_indices[50]]
+trans2 = swedish_sent[test_indices[50]]
+print(sent2, "\n", trans2)
+# [25] END
+
+# [26] START
+sent3 = sami_sent[test_indices[1015]]
+trans3 = swedish_sent[test_indices[1015]]
+print(sent3, "\n", trans3)
+# [26] END
+
+# [27] START
+sent4 = sami_short[11]
+trans4 = swedish_short[11]
+print(sent4, "\n", trans4)
+# [27] END
+
+# [28] START
+# Synth SWE
+# [28] END
+
 # [29] START
 model_path = "uni_joint_2layer_gelu_synth.pth.tar"
 # [29] END
@@ -180,6 +208,22 @@ if load_model == True:
     optimizer.load_state_dict(checkpoint['optimizer'])
 model_synth_swe.to(device)
 # [32] END
+
+# [33] START
+translate_sentence(model_synth_swe, sent1, device, sami_model, swedish_model)
+# [33] END
+
+# [34] START
+translate_sentence(model_synth_swe, sent2, device, sami_model, swedish_model)
+# [34] END
+
+# [35] START
+translate_sentence(model_synth_swe, sent3, device, sami_model, swedish_model)
+# [35] END
+
+# [36] START
+translate_sentence(model_synth_swe, sent4, device, sami_model, swedish_model)
+# [36] END
 
 # [37] START
 print("all sentences:")
@@ -233,7 +277,27 @@ if load_model == True:
 model_synth_sme.to(device)
 # [44] END
 
+# [45] START
+translate_sentence(model_synth_sme, sent1, device, sami_model, swedish_model)
+# [45] END
+
+# [46] START
+translate_sentence(model_synth_sme, sent2, device, sami_model, swedish_model)
+# [46] END
+
+# [47] START
+translate_sentence(model_synth_sme, sent3, device, sami_model, swedish_model)
+# [47] END
+
+# [48] START
+translate_sentence(model_synth_sme, sent4, device, sami_model, swedish_model)
+# [48] END
+
 # [49] START
 print(get_scores(sami_tokenized_short, swedish_tokenized_short, model_synth_sme, device, sami_model, swedish_model, "greedy"))
 # [49] END
+
+# [50] START
+
+# [50] END
 
