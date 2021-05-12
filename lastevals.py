@@ -54,67 +54,79 @@ sami_sent, swedish_sent = read_data('corpora/smeswebig.tmx.gz')
 # [5] END
 
 # [6] START
-sami_tokenized_test, swedish_tokenized_test = tokenizer_sp(sami_model, [sami_sent[i] for i in test_indices if i in range(len(sami_sent))], swedish_model, [swedish_sent[i] for i in test_indices if i in range(len(swedish_sent))])
+len(test_indices)
 # [6] END
 
 # [7] START
-test_src = torch.stack([torch.LongTensor(sent) for sent in sami_tokenized_test])
-test_tgts = torch.stack([torch.LongTensor(sent) for sent in swedish_tokenized_test])
+sami_tokenized, swedish_tokenized = tokenizer_sp(sami_model, sami_sent, swedish_model, swedish_sent)
 # [7] END
 
 # [8] START
+len(sami_tokenized)
+# [8] END
+
+# [9] START
+train_src = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
+train_tgts = torch.stack([torch.LongTensor(swedish_tokenized[i]) for i in train_indices if i in range(len(sami_tokenized))])
+# [9] END
+
+# [10] START
+len(test_src)
+# [10] END
+
+# [11] START
 test_short = []
 for i in test_indices:
     if len(sami_sent[i].split()) <= 20:
         test_short.append(i)
-# [8] END
-
-# [9] START
-sami_short = [sami_sent[i] for i in test_short]
-
-swedish_short = [swedish_sent[i] for i in test_short]
-# [9] END
-
-# [10] START
-len(test_short)
-# [10] END
-
-# [11] START
-len(test_indices)
 # [11] END
 
 # [12] START
-sami_tokenized, swedish_tokenized = tokenizer_sp(sami_model, sami_short, swedish_model, swedish_short)
+sami_short = [sami_sent[i] for i in test_short]
+
+swedish_short = [swedish_sent[i] for i in test_short]
 # [12] END
 
 # [13] START
-len(sami_tokenized)
+len(test_short)
 # [13] END
 
 # [14] START
-sami_tokenized = torch.stack([torch.LongTensor(sami_tokenized[i]) for i in range(len(sami_tokenized))])
+len(test_indices)
 # [14] END
 
 # [15] START
-swedish_tokenized = torch.stack([torch.LongTensor(swedish_tokenized[i]) for i in range(len(swedish_tokenized))])
+sami_tokenized_short, swedish_tokenized_short = tokenizer_sp(sami_model, sami_short, swedish_model, swedish_short)
 # [15] END
 
 # [16] START
-sami_tokenized.shape
+len(sami_tokenized_short)
 # [16] END
 
 # [17] START
-max_len = 150
+sami_tokenized_short = torch.stack([torch.LongTensor(sami_tokenized_short[i]) for i in range(len(sami_tokenized_short))])
 # [17] END
 
 # [18] START
+swedish_tokenized_short = torch.stack([torch.LongTensor(swedish_tokenized_short[i]) for i in range(len(swedish_tokenized_short))])
+# [18] END
+
+# [19] START
+sami_tokenized_short.shape
+# [19] END
+
+# [20] START
+max_len = 150
+# [20] END
+
+# [21] START
 # Training hyperparameters
 num_epochs = 500
 learning_rate = 3e-4
 batch_size = 64
-# [18] END
+# [21] END
 
-# [19] START
+# [22] START
 # Model hyperparameters
 src_vocab_size = 16000
 trg_vocab_size = 16000
@@ -127,21 +139,17 @@ max_len = 150
 forward_expansion = 2048
 sp.Load(sami_model)
 src_pad_idx = sp.pad_id()
-# [19] END
+# [22] END
 
-# [20] START
+# [23] START
 load_model = True
-# [20] END
+# [23] END
 
-# [25] START
-# Synth SWE
-# [25] END
-
-# [26] START
+# [29] START
 model_path = "uni_joint_2layer_gelu_synth.pth.tar"
-# [26] END
+# [29] END
 
-# [27] START
+# [30] START
 model_synth_swe = Trans_model(
     embedding_size,
     src_vocab_size,
@@ -156,52 +164,44 @@ model_synth_swe = Trans_model(
     device,
     'gelu'
 )
-# [27] END
+# [30] END
 
-# [28] START
+# [31] START
 sp.Load(swedish_model)
 criterion = nn.CrossEntropyLoss(ignore_index=sp.pad_id())
 optimizer = optim.Adam(model_synth_swe.parameters(), lr=learning_rate)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.95)
-# [28] END
+# [31] END
 
-# [29] START
+# [32] START
 if load_model == True:
     checkpoint = torch.load(model_path, map_location='cpu')
     model_synth_swe.load_state_dict(checkpoint['state_dict'])           
     optimizer.load_state_dict(checkpoint['optimizer'])
 model_synth_swe.to(device)
-# [29] END
-
-# [34] START
-print("all sentences:")
-# [34] END
-
-# [35] START
-print(get_scores(test_src, test_tgts, model_synth_swe, device, sami_model, swedish_model, "greedy"))
-# [35] END
-
-# [36] START
-print("short sentences:")
-# [36] END
+# [32] END
 
 # [37] START
-print(get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy"))
+print("all sentences:")
 # [37] END
 
 # [38] START
-
+len(test_src)
 # [38] END
 
 # [39] START
-## Synth SME
+print(get_scores(test_src, test_tgts, model_synth_swe, device, sami_model, swedish_model, "greedy"))
 # [39] END
 
 # [40] START
-model_path = "uni_joint_2layer_gelu_synth_sme.pth.tar"
+## Synth SME
 # [40] END
 
 # [41] START
+model_path = "uni_joint_2layer_gelu_synth_sme.pth.tar"
+# [41] END
+
+# [42] START
 model_synth_sme = Trans_model(
     embedding_size,
     src_vocab_size,
@@ -216,28 +216,24 @@ model_synth_sme = Trans_model(
     device,
     'gelu'
 )
-# [41] END
+# [42] END
 
-# [42] START
+# [43] START
 sp.Load(swedish_model)
 criterion = nn.CrossEntropyLoss(ignore_index=sp.pad_id())
 optimizer = optim.Adam(model_synth_sme.parameters(), lr=learning_rate)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.95)
-# [42] END
+# [43] END
 
-# [43] START
+# [44] START
 if load_model == True:
     checkpoint = torch.load(model_path, map_location='cpu')
     model_synth_sme.load_state_dict(checkpoint['state_dict'])           
     optimizer.load_state_dict(checkpoint['optimizer'])
 model_synth_sme.to(device)
-# [43] END
-
-# [48] START
-print(get_scores(sami_tokenized, swedish_tokenized, model_synth_swe, device, sami_model, swedish_model, "greedy"))
-# [48] END
+# [44] END
 
 # [49] START
-
+print(get_scores(sami_tokenized_short, swedish_tokenized_short, model_synth_sme, device, sami_model, swedish_model, "greedy"))
 # [49] END
 
