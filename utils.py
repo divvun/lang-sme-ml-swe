@@ -68,6 +68,7 @@ def get_scores(enc_sources, enc_target_sents, model, device, tokenizersrc, token
         x = divide_chunks(enc_sources, 100)
         output_str = []
         for sents in x:
+            print((len(output_str)/len(enc_sources)) * 100, end="\r")
             y = translate_enc_sentences(model, sents, device, tokenizertrg, max_length=150)
             output_str.extend(y)
         bleu = sacrebleu.corpus_bleu(output_str, [target_str])
