@@ -28,6 +28,7 @@ direction_layers_encoding_activation_parameter
 e.g SMESWE-2layers-uni-gelu-synth.ipynb
 from North Sámi to Swedish, 2 encoder and 2 decoder layers, unigram encoding, gelu activation, all synthetic data
 
+Parts of the code were taken from this tutorial: https://github.com/aladdinpersson/Machine-Learning-Collection/tree/master/ML/Pytorch/more_advanced/seq2seq_transformer
 
 Helper functions:
 
